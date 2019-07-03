@@ -193,7 +193,7 @@ while not done:
   if current == 'O':
     tips = reversi.getTips(current)
     time.sleep(0.3 + 0.05*len(tips))
-    random.shuffle(tips)
+    # random.shuffle(tips)
     if len(tips) > 0:
       computerMove = tips[0]
       for loc in tips:
@@ -267,7 +267,7 @@ while not done:
         text = font.render('click to leave', True, TIP_COLOR)
         screen.blit(text, (20, 60))
         pygame.mixer.music.stop()
-        win.play(-1)
+        win.play(1)
       elif score['X'] < score['O']:
         font = pygame.font.SysFont('Consoles', WIDTH + 50)
         text = font.render('you lose', True, LOSE_COLOR)
@@ -275,7 +275,7 @@ while not done:
         text = font.render('click to leave', True, TIP_COLOR)
         screen.blit(text, (20, 60))
         pygame.mixer.music.stop()
-        lose.play(-1)
+        lose.play(1)
       else:
         font = pygame.font.SysFont('Consoles', WIDTH + 50)
         text = font.render('The game ended in a draw.', True, LOSE_COLOR)
