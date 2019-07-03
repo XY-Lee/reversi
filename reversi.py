@@ -152,15 +152,14 @@ gameLock = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-# # background music
-# pygame.mixer.music.load('will-goodbyeSea.wav')
-# pygame.mixer.music.set_volume(0.5)
-# pygame.mixer.music.play(-1,0.0)
+# background music
+pygame.mixer.music.load('BGM.wav')
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1, 0.0)
 
-# win = pygame.mixer.Sound('win.wav')
-# lose = pygame.mixer.Sound('lose.wav')
-# chestFind = pygame.mixer.Sound('chestFind.wav')
-# sonarSet = pygame.mixer.Sound('sonarSet.wav')
+win = pygame.mixer.Sound('win.wav')
+lose = pygame.mixer.Sound('lose.wav')
+down = pygame.mixer.Sound('down.wav')
 
 # Set title of screen
 pygame.display.set_caption("神秘黑黑白棋")
@@ -188,6 +187,7 @@ while not done:
         move = (row, column)
         if reversi.isValidMove(current, move[0], move[1]):
           reversi.makeMove(move[0], move[1], current)
+          down.play()
           canChange = True
 
   if current == 'O':
@@ -200,84 +200,89 @@ while not done:
         if len(reversi.isValidMove(current, computerMove[0], computerMove[1])) < len(reversi.isValidMove(current, loc[0], loc[1])):
           computerMove = loc
       reversi.makeMove(computerMove[0], computerMove[1], current)
+      down.play()
     canChange = True
 
   if done:
     break
-  if current == 'X' and not canChange:
-    userTips = reversi.getTips('X')
-  else:
-    userTips = []
-  # Set the screen background
-  screen.fill(BLACK)
-  # font data
-  font = pygame.font.SysFont('Consoles', WIDTH + 5)
-  # Draw the grid
-  hasFreeArea = len(reversi.getTips('X')) != 0 or len(
-      reversi.getTips('O')) != 0
-  for row in range(nRow):
-    for column in range(nCol):
-      if [row, column] in userTips:
-        color = RED
-      else:
-        color = WHITE
-      pygame.draw.rect(screen,
-                       color,
-                       [(MARGIN + WIDTH) * column + MARGIN,
-                        (MARGIN + HEIGHT) * row + MARGIN,
-                        WIDTH,
-                        HEIGHT])
-      if reversi.board[row][column] == 'X':
-        color = (0, 0, 0)
-        pygame.draw.circle(screen, color, [(MARGIN + WIDTH) * column + MARGIN + int(WIDTH / 2),
-                                           (MARGIN + HEIGHT) * row + MARGIN + int(HEIGHT / 2)], int(HEIGHT / 2))
-      elif reversi.board[row][column] == 'O':
-        color = (255, 255, 255)
-        pygame.draw.circle(screen, color, [(MARGIN + WIDTH) * column + MARGIN + int(WIDTH / 2),
-                                           (MARGIN + HEIGHT) * row + MARGIN + int(HEIGHT / 2)], int(HEIGHT / 2))
-  pygame.draw.rect(screen,
-                   (154, 205, 154),
-                   [0,
-                    WINDOW_SIZE[1] - 60,
-                    (MARGIN + WIDTH) * nCol + MARGIN,
-                    60])
-  pygame.draw.circle(screen, (0, 0, 0), [0 + int(HEIGHT / 2),
-                                         WINDOW_SIZE[1] - 30], int(HEIGHT / 3))
-  pygame.draw.circle(screen, (255, 255, 255), [int(WINDOW_SIZE[1]/2),
-                                               WINDOW_SIZE[1] - 30], int(HEIGHT / 3))
-  score = reversi.getScroe()
-  text = font.render(':{}'.format(score['X']), True, (0, 0, 0))
-  screen.blit(text, (0 + int(HEIGHT / 2) * 2, WINDOW_SIZE[1] - 50))
-  text = font.render(':{}'.format(score['O']), True, (0, 0, 0))
-  screen.blit(text, (int(WINDOW_SIZE[1]/2) +
-                     int(HEIGHT / 2), WINDOW_SIZE[1] - 50))
-
-  # change user
-  if canChange:
-    current = 'X' if current == 'O' else 'O'
-    canChange = False
-  if not hasFreeArea:
-    score = reversi.getScroe()
-    if score['X'] > score['O']:
-      font = pygame.font.SysFont('Consoles', WIDTH + 50)
-      text = font.render('you win', True, WIN_COLOR)
-      screen.blit(text, (10, 10))
-      text = font.render('click to leave', True, TIP_COLOR)
-      screen.blit(text, (20, 60))
-
-    elif score['X'] < score['O']:
-      font = pygame.font.SysFont('Consoles', WIDTH + 50)
-      text = font.render('you lose', True, LOSE_COLOR)
-      screen.blit(text, (10, 10))
-      text = font.render('click to leave', True, TIP_COLOR)
-      screen.blit(text, (20, 60))
+  if not gameLock:
+    if current == 'X' and not canChange:
+      userTips = reversi.getTips('X')
     else:
-      font = pygame.font.SysFont('Consoles', WIDTH + 50)
-      text = font.render('The game ended in a draw.', True, LOSE_COLOR)
-      screen.blit(text, (10, 10))
-      text = font.render('click to leave', True, TIP_COLOR)
-      screen.blit(text, (20, 60))
-    gameLock = True
+      userTips = []
+    # Set the screen background
+    screen.fill(BLACK)
+    # font data
+    font = pygame.font.SysFont('Consoles', WIDTH + 5)
+    # Draw the grid
+    hasFreeArea = len(reversi.getTips('X')) != 0 or len(
+        reversi.getTips('O')) != 0
+    for row in range(nRow):
+      for column in range(nCol):
+        if [row, column] in userTips:
+          color = RED
+        else:
+          color = WHITE
+        pygame.draw.rect(screen,
+                         color,
+                         [(MARGIN + WIDTH) * column + MARGIN,
+                          (MARGIN + HEIGHT) * row + MARGIN,
+                          WIDTH,
+                          HEIGHT])
+        if reversi.board[row][column] == 'X':
+          color = (0, 0, 0)
+          pygame.draw.circle(screen, color, [(MARGIN + WIDTH) * column + MARGIN + int(WIDTH / 2),
+                                             (MARGIN + HEIGHT) * row + MARGIN + int(HEIGHT / 2)], int(HEIGHT / 2))
+        elif reversi.board[row][column] == 'O':
+          color = (255, 255, 255)
+          pygame.draw.circle(screen, color, [(MARGIN + WIDTH) * column + MARGIN + int(WIDTH / 2),
+                                             (MARGIN + HEIGHT) * row + MARGIN + int(HEIGHT / 2)], int(HEIGHT / 2))
+    pygame.draw.rect(screen,
+                     (154, 205, 154),
+                     [0,
+                      WINDOW_SIZE[1] - 60,
+                      (MARGIN + WIDTH) * nCol + MARGIN,
+                      60])
+    pygame.draw.circle(screen, (0, 0, 0), [0 + int(HEIGHT / 2),
+                                           WINDOW_SIZE[1] - 30], int(HEIGHT / 3))
+    pygame.draw.circle(screen, (255, 255, 255), [int(WINDOW_SIZE[1]/2),
+                                                 WINDOW_SIZE[1] - 30], int(HEIGHT / 3))
+    score = reversi.getScroe()
+    text = font.render(':{}'.format(score['X']), True, (0, 0, 0))
+    screen.blit(text, (0 + int(HEIGHT / 2) * 2, WINDOW_SIZE[1] - 50))
+    text = font.render(':{}'.format(score['O']), True, (0, 0, 0))
+    screen.blit(text, (int(WINDOW_SIZE[1]/2) +
+                       int(HEIGHT / 2), WINDOW_SIZE[1] - 50))
+
+    # change user
+    if canChange:
+      current = 'X' if current == 'O' else 'O'
+      canChange = False
+    if not hasFreeArea:
+      score = reversi.getScroe()
+      if score['X'] > score['O']:
+        font = pygame.font.SysFont('Consoles', WIDTH + 50)
+        text = font.render('you win', True, WIN_COLOR)
+        screen.blit(text, (10, 10))
+        text = font.render('click to leave', True, TIP_COLOR)
+        screen.blit(text, (20, 60))
+        pygame.mixer.music.stop()
+        win.play(-1)
+      elif score['X'] < score['O']:
+        font = pygame.font.SysFont('Consoles', WIDTH + 50)
+        text = font.render('you lose', True, LOSE_COLOR)
+        screen.blit(text, (10, 10))
+        text = font.render('click to leave', True, TIP_COLOR)
+        screen.blit(text, (20, 60))
+        pygame.mixer.music.stop()
+        lose.play(-1)
+      else:
+        font = pygame.font.SysFont('Consoles', WIDTH + 50)
+        text = font.render('The game ended in a draw.', True, LOSE_COLOR)
+        screen.blit(text, (10, 10))
+        text = font.render('click to leave', True, TIP_COLOR)
+        screen.blit(text, (20, 60))
+      gameLock = True
 
   # Limit to 60 frames per second
   clock.tick(60)
